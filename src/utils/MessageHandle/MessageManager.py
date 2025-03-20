@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 import html
 import re
 import threading
@@ -15,7 +15,7 @@ from nonebot.log import logger
 
 
 class MessageManager:
-    def __init__(self):
+    def __init__(self, time_interval: int = 10):
         # 消息队列，字典是用户id，列表是消息列表
         # 一个Message是一句话（一行）
         # 取末尾的最后一条的生成时间来计算是否需要处理该队列
@@ -25,6 +25,48 @@ class MessageManager:
         self.private_queue_thread: threading.Thread | None = None
         # 添加一个event来控制线程私聊消息队列线程退出
         self.private_queue_stop_event: threading.Event = threading.Event()
+        self.init_private_queue_handle()
+        # 私聊消息队列处理时间间隔（打字等待时间）
+        # 当前疑问：如果处理一个队列时还有消息增加，是否会导致bug
+        self.time_interval = time_interval
+        # 消息处理器列表
+        self.message_processors = []
+
+    def message_processor(self, func):
+        """装饰器，用于注册消息处理方法
+        
+        Args:
+            func: 处理函数，接受两个参数：用户ID(str)和消息(KMessage)，返回str
+            
+        Returns:
+            func: 原处理函数
+        """
+        self.message_processors.append(func)
+        return func
+    
+    async def process_message(self, user_id: str, message: str) -> str:
+        """异步调用所有注册的消息处理方法，并将结果聚合
+        
+        Args:
+            user_id (str): 用户ID
+            message (str): 处理后的可大模型可理解的消息
+            
+        Returns:
+            str: 聚合的处理结果
+        """
+        results = []
+        
+        # 异步调用所有处理器
+        for processor in self.message_processors:
+            try:
+                result = await processor(user_id, message)
+                if result:
+                    results.append(result)
+            except Exception as e:
+                logger.error(f"消息处理器执行异常: {e}\n{traceback.format_exc()}")
+        
+        # 聚合结果
+        return "".join(results)
 
     async def add_private_message(self, message: Message, user_id: str):
         """处理将私聊消息添加到消息队列中
@@ -92,9 +134,9 @@ class MessageManager:
             raise ValueError(f"不支持的消息类型: {message.type}")
         
     async def _format_message_content(self, 
-                                      message: MessageSegment, 
-                                      message_type: MessageType
-                                      ) -> str:
+                                    message: MessageSegment, 
+                                    message_type: MessageType
+                                    ) -> str:
         """用于格式化不同消息的内容（只保留必要内容）到str
 
         Args:
@@ -127,7 +169,7 @@ class MessageManager:
         else:
             return None
         
-    def _init_private_queue_handle(self):
+    def init_private_queue_handle(self):
         """
         这个方法用于初始化私聊消息队列处理器
         """
@@ -158,5 +200,14 @@ class MessageManager:
         这个方法用于处理私聊消息队列
         """
         while not self.private_queue_stop_event.is_set():
-            
-        
+            # 按照时间顺序处理私聊消息队列
+            # 遍历用户
+            for user_id, messages in self.private_message_queue.items():
+                # 检查某个用户信息是否超过时间间隔——超过则处理
+                if (
+                    datetime.now() - self.private_recent_message_time[user_id]) < timedelta(seconds=self.time_interval):
+                    # 未超过时间间隔，跳过
+                    continue
+                # 超过时间间隔，处理
+                messages = []
+                # 要遍历消息，处理为大模型方便处理的格式

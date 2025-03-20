@@ -7,20 +7,19 @@ from src.utils.Bases.ScopeBase import ScopeBase
 class ConfigManager(ScopeBase):
     def __init__(
         self, 
-        config_path: str = "./config/bot_config.toml", 
-        template_path: Optional[str] = None, 
+        is_single: bool = True,
         key: Optional[str] = None,
-        is_single: bool = True
+        config_path: str = "./config/bot_config.toml", 
+        template_path: Optional[str] = None
         ):
-        """初始化日志管理器
+        """初始化配置管理器
 
         Args:
+            is_single (bool, optional): 是否是单例模式
+            key (Optional[str], optional): 作用域id
             config_path (str): 配置文件地址
             template_path (Optional[str], optional): 配置模板文件
-            key (Optional[str], optional): 作用域id
-            is_single (bool, optional): 是否是单例模式
         """
-        super().__init__(is_single, key)
         self._config_path = Path(config_path)
         self._template_path = Path(template_path) if template_path else None
         self._config: Dict[str, Any] = {}
