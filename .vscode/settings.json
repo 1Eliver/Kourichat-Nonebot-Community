@@ -1,0 +1,10 @@
+{
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.codeActions.triggerOnFocusChange": true,
+    "editor.hideCursorInOverviewRuler": true,
+    "editor.inlayHints.padding": true,
+    "editor.inlineCompletionsAccessibilityVerbose": true,
+    "editor.lineHeight": 1.5,
+    "editor.renderLineHighlight": "all",
+    "workbench.tree.renderIndentGuides": "always"
+}

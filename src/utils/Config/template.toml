@@ -1,0 +1,237 @@
+admin_password = "admin12345"
+
+[llm_settings]
+# 填写与下表中.后面的名称一致的名称
+# 例如 openai 和 zhipu
+type = "openai"
+
+[llm_settings.openai]
+# 这里不止可以填写openai，也可以填写别的自定义的模型（只要是支持openai的格式访问的模型都可以）
+# 各类中转都是填在这里的
+api_key = "sk-proj-1234567890"
+base_url = "https://api.openai.com/v1"
+model = "gpt-4o-mini"
+
+[llm_settings.zhipu]
+# 智谱大模型api设置
+api_key = "sk-proj-1234567890"
+model = "GLM-4-Flash"
+
+# 聊天相关的设置
+[chat_settings]
+
+# 消息队列等待时间（单位：秒）
+# 再此时间内的发送的信息会被并做一条回复喵
+message_queue_wait_time = 5
+
+# 私聊设置
+[chat_settings.private_chat]
+
+# 主人qq设置 
+master_qq = 1234567890
+
+# 是否回复别人的私聊消息
+reply_other_private_chat = true
+
+# 启用白名单（否则则是黑名单）
+# 如果启用白名单，则只回复白名单中的消息
+# 如果启用黑名单，则回复所有人的消息，但不回复黑名单中的消息
+enable_white_list = true
+
+# 白名单（回复哪些人的私聊消息）
+white_list = [1234567890, 9876543210]
+
+# 黑名单（不回复哪些人的私聊消息）
+black_list = [1234567890, 9876543210]
+
+# 群聊设置
+[chat_settings.group_chat]
+
+# 是否启用群聊消息
+enable_group_chat = true
+
+# 是否只接受主人的at
+only_reply_master_at = true
+
+# 是否启用群聊白名单
+# 如果启用白名单，则只回复白名单中的群的消息
+# 如果启用黑名单，则回复所有群的消息，但不回复黑名单中的群的消息
+enable_group_white_list = true
+
+# 群聊白名单（回复哪些群的消息）
+group_white_list = [1234567890, 9876543210]
+
+# 群聊黑名单（不回复哪些群的消息）
+group_black_list = [1234567890, 9876543210]
+
+# 自动消息（主动消息设置）
+# 自动消息就是机器人会主动给你发消息捏
+# 也可能是给其他人或者群里发信息
+[chat_settings.auto_message]
+
+# 自动消息最小发送间隔（单位：分钟）
+auto_message_min_interval = 60
+
+# 自动消息最大发送间隔（单位：分钟）
+auto_message_max_interval = 240
+
+# 安静时间设置
+[chat_settings.auto_message.quiet_time]
+
+# 是否启用安静时间
+enable_quiet_time = true
+
+# 安静时间开始（几点几分）
+quiet_time_start = "22:00"
+
+# 安静时间结束（几点几分）
+quiet_time_end = "06:00"
+
+[memory_settings]
+# 记忆相关的设置
+
+# 是否启用记忆
+enable_memory = false
+
+# 是否启用长期记忆
+enable_long_term_memory = false
+
+# 是否启用关键记忆
+enable_key_memory = false
+
+[memory_settings.base_settings]
+# 记忆的基础设置
+
+# 设置是否使用和llm相同的 api_key 和 base_url
+use_same_with_llm = true
+
+# 设置是否启用rerank
+enable_rerank = false
+
+# 短期记忆保存路径
+short_term_memory_save_path = "./data/memory/short_term_memory.json"
+
+# 嵌入模型设置
+# 如果use_same_with_llm为false，则需要设置全部设置
+# 否则只需要设置embedding_model
+[memory_settings.base_settings.embedding]
+# 嵌入模型名
+embedding_model = "text-embedding-3-small"
+
+# 嵌入模型api_key
+embedding_api_key = "sk-proj-1234567890"
+
+# 嵌入模型base_url
+embedding_base_url = "https://api.openai.com/v1"
+
+# 重排序设置
+# 如果use_same_with_llm为false，则需要设置全部设置
+# 否则只需要设置rerank_model
+[memory_settings.base_settings.rerank]
+# 设置rerank模型
+rerank_model = "GLM-4-Flash"
+
+# 重排序模型api_key
+rerank_api_key = "sk-proj-1234567890"
+
+# 重排序模型base_url
+rerank_base_url = "https://api.openai.com/v1"
+
+# 长期记忆设置
+[memory_settings.long_term_settings]
+
+# 长期记忆保存时间（单位：分钟）
+long_term_memory_save_time = 1440
+
+# 是否使用和llm相同的 api_key 和 base_url
+use_same_with_llm = true
+
+# 长期记忆总结模型设置
+# 如果use_same_with_llm为false，则需要设置全部设置
+# 否则只需要设置summary_model
+[memory_settings.long_term_settings.summary]
+
+# 总结模型名
+summary_model = "GLM-4-Flash"
+
+# 总结模型api_key
+summary_api_key = "sk-proj-1234567890"
+
+# 总结模型base_url
+summary_base_url = "https://api.openai.com/v1"
+
+# 长期记忆保存容器类型
+# 填写与下表中.后面的名称一致的名称
+# 例如 sqlite 和 mysql
+saver_type = "sqlite"
+
+# sqlite 容器设置
+[memory_settings.long_term_settings.sqlite]
+
+# 数据库文件路径
+database_path = "./data/memory/memory.db"
+
+# 表名
+table_name = "long_term_memory"
+
+# mysql 容器设置
+[memory_settings.long_term_settings.mysql]
+
+# 数据库地址
+database_host = "localhost"
+
+# 数据库端口
+database_port = 3306
+
+# 数据库用户名
+database_username = "root"
+
+# 数据库密码
+database_password = "password"
+
+# 数据库名称
+database_name = "kourichat"
+
+# 表名
+table_name = "long_term_memory"
+
+# 关键记忆设置
+[memory_settings.key_memory_settings]
+
+# 关键记忆触发关键词列表
+key_memory_trigger_keywords = ["记住", "记得", "生日", "帮我记住", "纪念日"]
+
+# 关键记忆保存容器类型
+# 填写与下表中.后面的名称一致的名称
+# 例如 sqlite 和 mysql
+saver_type = "sqlite"
+
+# sqlite 容器设置
+[memory_settings.key_memory_settings.sqlite]
+
+# 数据库文件路径
+database_path = "./data/memory/memory.db"
+
+# 表名
+table_name = "key_memory"
+
+# mysql 容器设置
+[memory_settings.key_memory_settings.mysql]
+
+# 数据库地址
+database_host = "localhost"
+
+# 数据库端口
+database_port = 3306
+
+# 数据库用户名
+database_username = "root" 
+
+# 数据库密码
+database_password = "password"
+
+# 数据库名称
+database_name = "kourichat"
+
+# 表名
+table_name = "key_memory"
